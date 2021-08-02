@@ -9,7 +9,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - /etc/nginx/conf.d
+      - nginxServer:/etc/nginx/conf.d
 
   dockerGen:
     image: jwilder/docker-gen:0.7
@@ -17,13 +17,15 @@ services:
     restart: always
     depends_on:
       - nginxServer
-    volumes_from:
-      - nginxServer
     volumes:
+      - nginxServer:/etc/nginx/conf.d
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - ./nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl
     command:
       -notify-sighup nginxServer -watch /etc/docker-gen/templates/nginx.tmpl /etc/nginx/conf.d/default.conf
+
+volumes:
+  nginxServer:
 
 networks:
   default:
